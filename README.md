@@ -2,6 +2,9 @@
 
 An interactive 3D NFC Smart Business Card website built with GSAP 3D animations and instant contact actions.
 
+## Live Website
+👉 **[https://majestic-praline-b82751.netlify.app](https://majestic-praline-b82751.netlify.app)**
+
 ## Features
 - **GSAP 3D Spin Animation**: The business card performs a 2.0-second 3D spin on page load and smoothly settles to a stop.
 - **Two-Sided Smart Card**: Realistic front face with the OLABERRY business card and an executive NFC smart card back with EMV chip and contactless waves.

@@ -1080,12 +1080,14 @@ header {
    OLABERRY BUSINESS CONTACT CONFIGURATION
    Edit these details before publishing.
    ===================================================================== */
+const CANONICAL_LIVE_URL = "https://majestic-praline-b82751.netlify.app";
+
 const BUSINESS = {
   name: "OLABERRY Cleaning Services",
   phone: "+2340000000000",
   whatsapp: "2340000000000",
   email: "hello@yourdomain.com",
-  website: "https://example.com",
+  website: CANONICAL_LIVE_URL,
   booking: "https://example.com/booking",
   address: "Business Address"
 };
@@ -1355,14 +1357,13 @@ const downloadQrBtn = document.getElementById("downloadQrBtn");
 const toastMsg = document.getElementById("toastMsg");
 
 // Determine the live target URL
-// When hosted on Netlify, window.location.href automatically points to the live URL!
+// Points directly to your live Netlify site
 function getLiveUrl() {
   const current = window.location.href;
-  if (current.startsWith("http://") || current.startsWith("https://")) {
-    return current.split("#")[0];
+  if (current.startsWith("https://") && !current.includes("localhost") && !current.includes("127.0.0.1")) {
+    return current.split("#")[0].split("?")[0];
   }
-  // Fallback placeholder before deployment
-  return "https://smart-business-card.netlify.app";
+  return CANONICAL_LIVE_URL;
 }
 
 let modalQrCodeInstance = null;
