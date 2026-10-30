@@ -1,0 +1,1487 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0e0d0a">
+<title>OLABERRY Cleaning Services | NFC Smart Contact Card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- GSAP Library for high-performance 3D animations -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<!-- QRCode.js Library for client-side live QR Code generation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root {
+  --bg: #0e0d0a;
+  --bg-gradient: radial-gradient(circle at 20% 0%, #262013 0%, #12110e 45%, #080806 100%);
+  --panel: #171510;
+  --panel-border: rgba(201, 169, 91, 0.22);
+  --gold: #c9a95b;
+  --gold-light: #ead69a;
+  --gold-dark: #8c7133;
+  --gold-glow: rgba(201, 169, 91, 0.35);
+  --text: #f7f1e4;
+  --muted: #a69f8e;
+  --radius-card: 18px;
+  --radius-btn: 14px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  background-image: var(--bg-gradient);
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.5;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+main {
+  width: min(1160px, 100%);
+  margin: 0 auto;
+  padding: 30px 24px 60px;
+}
+
+/* Header & Branding */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(201, 169, 91, 0.12);
+}
+
+.brand {
+  font-family: 'Cinzel', Georgia, serif;
+  font-weight: 700;
+  font-size: clamp(20px, 3vw, 24px);
+  letter-spacing: 3px;
+  background: linear-gradient(135deg, #ffffff 10%, var(--gold-light) 50%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--gold-light);
+  background: rgba(201, 169, 91, 0.08);
+  border: 1px solid rgba(201, 169, 91, 0.3);
+  padding: 6px 14px;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 8px var(--gold);
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+/* Intro Section */
+.intro {
+  margin-bottom: 30px;
+}
+
+.intro h1 {
+  font-family: 'Cinzel', Georgia, serif;
+  font-weight: 700;
+  font-size: clamp(26px, 4.5vw, 40px);
+  line-height: 1.2;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #ffffff 20%, var(--gold-light) 60%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.intro p {
+  color: var(--muted);
+  font-size: clamp(14px, 2vw, 16px);
+  font-weight: 400;
+}
+
+/* Two-column layout */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+  gap: 36px;
+  align-items: start;
+}
+
+/* 3D Card Presentation Stage */
+.card-stage-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}
+
+.card-stage {
+  perspective: 1200px;
+  width: 100%;
+  max-width: 540px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  padding: 10px 0;
+}
+
+/* 3D Card Wrapper with realistic physics */
+.card-3d-wrapper {
+  width: 100%;
+  aspect-ratio: 1536 / 878;
+  position: relative;
+  transform-style: preserve-3d;
+  cursor: pointer;
+  touch-action: manipulation;
+  will-change: transform;
+}
+
+/* Fallback pure CSS 2-second spin if GSAP fails to load (offline) */
+.card-3d-wrapper.css-spin {
+  animation: cardSpin2s 2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes cardSpin2s {
+  0% {
+    transform: rotateY(-720deg) rotateX(15deg) rotateZ(-6deg) scale(0.88);
+    opacity: 0.3;
+  }
+  100% {
+    transform: rotateY(0deg) rotateX(0deg) rotateZ(0deg) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Card Faces (Front & Back) */
+.card-face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border: 1px solid rgba(201, 169, 91, 0.45);
+  box-shadow: 
+    0 22px 50px -10px rgba(0, 0, 0, 0.75),
+    0 0 25px rgba(201, 169, 91, 0.15),
+    inset 0 1px 1px rgba(255, 255, 255, 0.25);
+  background: #151410;
+}
+
+/* Front Face */
+.card-front {
+  transform: rotateY(0deg);
+}
+
+.card-front img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Back Face: Luxury Executive NFC Card Design */
+.card-back {
+  transform: rotateY(180deg);
+  background: 
+    radial-gradient(circle at 85% 15%, rgba(201, 169, 91, 0.22) 0%, transparent 50%),
+    radial-gradient(circle at 15% 85%, rgba(201, 169, 91, 0.12) 0%, transparent 45%),
+    linear-gradient(135deg, #1f1b13 0%, #12110e 55%, #0a0907 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(16px, 3.5vw, 26px);
+  color: var(--text);
+}
+
+/* Back face geometric mesh overlay */
+.card-back::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(201, 169, 91, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201, 169, 91, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+}
+
+.card-back-header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Metallic EMV Smart Chip Graphic */
+.card-chip {
+  width: 44px;
+  height: 34px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #e4cd88 0%, #a4823c 50%, #cbb16a 100%);
+  border: 1px solid #7c622c;
+  position: relative;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.4), 0 2px 6px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  padding: 4px;
+}
+
+.chip-line {
+  height: 1px;
+  background: rgba(85, 63, 19, 0.6);
+  width: 100%;
+}
+
+/* Contactless NFC Waves Icon */
+.nfc-icon {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--gold-light);
+}
+
+.nfc-icon svg {
+  width: 28px;
+  height: 28px;
+  filter: drop-shadow(0 0 6px var(--gold-glow));
+}
+
+.card-back-center {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  margin: auto 0;
+}
+
+.card-back-brand {
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: clamp(20px, 4vw, 30px);
+  font-weight: 800;
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, #ffffff 0%, var(--gold-light) 45%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 4px;
+}
+
+.card-back-tagline {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+
+.card-back-footer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.card-back-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card-back-serial {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #928a78;
+}
+
+.card-back-hint {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--gold-light);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Dynamic Scannable Mini QR on Card Back */
+.card-back-qr {
+  background: #ffffff;
+  border: 2px solid var(--gold);
+  border-radius: 8px;
+  padding: 4px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.card-back-qr:hover {
+  transform: scale(1.08);
+}
+
+.card-back-qr canvas,
+.card-back-qr img {
+  display: block;
+  width: 44px !important;
+  height: 44px !important;
+}
+
+/* Dynamic Specular Sheen Overlay */
+.card-shine {
+  position: absolute;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.08) 35%,
+    rgba(255, 255, 255, 0.45) 45%,
+    rgba(234, 214, 154, 0.7) 50%,
+    rgba(255, 255, 255, 0.35) 55%,
+    transparent 70%
+  );
+  transform: translateX(-150%) rotate(25deg);
+  opacity: 0;
+  mix-blend-mode: overlay;
+  z-index: 3;
+}
+
+/* Realistic Ground Shadow that moves with the 3D card */
+.card-shadow {
+  width: 82%;
+  height: 22px;
+  margin-top: 18px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.35) 45%, transparent 75%);
+  filter: blur(10px);
+  transform-origin: center;
+  pointer-events: none;
+  transition: transform 0.2s ease-out;
+}
+
+/* Interactive Card Buttons */
+.card-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+  width: 100%;
+  max-width: 540px;
+  flex-wrap: wrap;
+}
+
+.btn-interactive {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #221f17 0%, #171510 100%);
+  border: 1px solid rgba(201, 169, 91, 0.35);
+  color: var(--gold-light);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  user-select: none;
+}
+
+.btn-interactive:hover {
+  background: linear-gradient(135deg, #2b271d 0%, #1e1b14 100%);
+  border-color: var(--gold);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(201, 169, 91, 0.25);
+}
+
+.btn-interactive:active {
+  transform: translateY(0);
+}
+
+.btn-qr-highlight {
+  border-color: var(--gold);
+  background: linear-gradient(135deg, #322814 0%, #1c1810 100%);
+}
+
+.btn-interactive .icon-glyph {
+  font-size: 15px;
+  display: inline-block;
+  transition: transform 0.4s ease;
+}
+
+.btn-interactive:hover .icon-glyph {
+  transform: rotate(180deg);
+}
+
+.interactive-hint {
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* Actions Right Column */
+.actions {
+  background: rgba(23, 21, 16, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--panel-border);
+  border-radius: 20px;
+  padding: 26px 22px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+}
+
+.actions h2 {
+  font-family: 'Cinzel', Georgia, serif;
+  font-weight: 700;
+  font-size: clamp(20px, 3vw, 24px);
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.sub {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+/* Action Links */
+.action-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.action {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 62px;
+  padding: 12px 16px;
+  border: 1px solid rgba(201, 169, 91, 0.2);
+  border-radius: var(--radius-btn);
+  background: linear-gradient(110deg, #1e1b14 0%, #151410 100%);
+  color: var(--text);
+  text-decoration: none;
+  transition: all 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.action::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(201, 169, 91, 0.08), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.action:hover {
+  border-color: var(--gold);
+  transform: translateY(-2px);
+  background: linear-gradient(110deg, #28241b 0%, #191813 100%);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35), 0 0 15px rgba(201, 169, 91, 0.12);
+}
+
+.action:hover::before {
+  transform: translateX(100%);
+}
+
+.action-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 12px;
+  background: rgba(201, 169, 91, 0.12);
+  border: 1px solid rgba(201, 169, 91, 0.25);
+  color: var(--gold-light);
+  font-size: 19px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.action:hover .action-icon {
+  background: var(--gold);
+  color: #111;
+  border-color: var(--gold);
+}
+
+.action-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.action-text strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.action-text small {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.action-arrow {
+  color: var(--gold);
+  font-size: 20px;
+  transition: transform 0.2s;
+}
+
+.action:hover .action-arrow {
+  transform: translateX(3px);
+  color: var(--gold-light);
+}
+
+/* Primary Highlight for Save Contact */
+.action-primary {
+  border-color: rgba(201, 169, 91, 0.45);
+  background: linear-gradient(110deg, #2d2617 0%, #1c1810 100%);
+}
+
+.action-primary .action-icon {
+  background: rgba(201, 169, 91, 0.22);
+}
+
+.action-qr-test {
+  border-color: rgba(201, 169, 91, 0.4);
+}
+
+/* =====================================================================
+   LIVE QR CODE MODAL FOR CAMERA SCAN TESTING
+   ===================================================================== */
+.qr-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 7, 5, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.qr-modal-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.qr-modal {
+  width: min(440px, 100%);
+  background: linear-gradient(135deg, #1b1812 0%, #12110e 100%);
+  border: 1px solid rgba(201, 169, 91, 0.4);
+  border-radius: 22px;
+  padding: 28px 24px;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(201, 169, 91, 0.2);
+  transform: scale(0.92) translateY(20px);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.qr-modal-backdrop.active .qr-modal {
+  transform: scale(1) translateY(0);
+}
+
+.qr-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(201, 169, 91, 0.1);
+  border: 1px solid rgba(201, 169, 91, 0.25);
+  color: var(--gold-light);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  transition: all 0.2s;
+}
+
+.qr-modal-close:hover {
+  background: var(--gold);
+  color: #111;
+}
+
+.qr-modal h3 {
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 22px;
+  color: var(--gold-light);
+  margin-bottom: 6px;
+}
+
+.qr-modal p.qr-desc {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+/* Crisp QR Code Container with High Contrast */
+.qr-frame {
+  display: inline-block;
+  padding: 14px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 3px solid var(--gold);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  margin-bottom: 16px;
+  position: relative;
+}
+
+#modalQrCanvas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 200px;
+  min-height: 200px;
+}
+
+#modalQrCanvas canvas,
+#modalQrCanvas img {
+  display: block;
+  width: 200px !important;
+  height: 200px !important;
+}
+
+/* Destination URL display */
+.qr-url-box {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(201, 169, 91, 0.2);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.qr-url-text {
+  font-size: 12px;
+  color: var(--text);
+  word-break: break-all;
+  flex: 1;
+  text-align: left;
+  font-family: monospace;
+}
+
+.btn-copy-url {
+  background: rgba(201, 169, 91, 0.15);
+  border: 1px solid var(--gold);
+  color: var(--gold-light);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.btn-copy-url:hover {
+  background: var(--gold);
+  color: #111;
+}
+
+.qr-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-download-qr {
+  flex: 1;
+  background: linear-gradient(135deg, #c9a95b 0%, #8c7133 100%);
+  border: none;
+  color: #111;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s, filter 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-download-qr:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+
+.scan-tips {
+  margin-top: 14px;
+  font-size: 11px;
+  color: #928a78;
+}
+
+/* Toast Message */
+.toast-msg {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(50px);
+  background: #1e1b13;
+  color: var(--gold-light);
+  border: 1px solid var(--gold);
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  z-index: 10000;
+}
+
+.toast-msg.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Footer Note */
+.note {
+  color: #8c8574;
+  font-size: 12px;
+  margin-top: 28px;
+  text-align: center;
+}
+
+/* Responsiveness */
+@media (max-width: 880px) {
+  main {
+    padding: 20px 16px 40px;
+  }
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  .card-stage-container {
+    max-width: 580px;
+    margin: 0 auto;
+  }
+  .actions {
+    max-width: 580px;
+    width: 100%;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-stage {
+    perspective: 900px;
+  }
+  .card-controls {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .btn-interactive {
+    flex: 1 1 calc(50% - 6px);
+    padding: 9px 12px;
+    font-size: 12px;
+  }
+  .actions {
+    padding: 20px 16px;
+  }
+}
+
+/* Respect user preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .card-3d-wrapper.css-spin {
+    animation: none !important;
+  }
+  .card-shadow {
+    transition: none;
+  }
+}
+</style>
+</head>
+<body>
+
+<main>
+  <!-- Header with Brand & Verified Status -->
+  <header>
+    <div class="brand">OLABERRY</div>
+    <div class="badge">
+      <span class="badge-dot"></span>
+      <span>NFC Smart Card</span>
+    </div>
+  </header>
+
+  <!-- Title Introduction -->
+  <section class="intro">
+    <h1>Excellence is Our Signature</h1>
+    <p>Clean spaces. Healthy places. Happy faces.</p>
+  </section>
+
+  <!-- Interactive Layout -->
+  <div class="layout">
+    
+    <!-- Left Column: 3D Animated Smart Business Card -->
+    <div class="card-stage-container">
+      <div class="card-stage" id="cardStage">
+        
+        <!-- 3D Flippable / Spinnable Card Element -->
+        <div class="card-3d-wrapper" id="card3d" role="button" tabindex="0" aria-label="OLABERRY Smart Business Card. Tap or click to spin">
+          
+          <!-- Front Face: High Resolution Business Card -->
+          <div class="card-face card-front">
+            <img src="assets/olaberry-card.jpg" alt="OLABERRY Cleaning Services business card front">
+            <div class="card-shine" id="cardShineFront"></div>
+          </div>
+
+          <!-- Back Face: Luxury Executive NFC Card with EMV Chip & QR -->
+          <div class="card-face card-back">
+            <div class="card-back-header">
+              <!-- Smart EMV chip -->
+              <div class="card-chip" aria-hidden="true">
+                <div class="chip-line"></div>
+                <div class="chip-line"></div>
+                <div class="chip-line"></div>
+              </div>
+              
+              <!-- Contactless NFC waves SVG -->
+              <div class="nfc-icon" title="NFC Contactless Enabled" aria-label="NFC Contactless">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                  <path d="M8.5 16.5a5 5 0 0 1 0-9"></path>
+                  <path d="M12 19a8.5 8.5 0 0 0 0-14"></path>
+                  <path d="M15.5 21.5a12 12 0 0 0 0-19"></path>
+                </svg>
+              </div>
+            </div>
+
+            <div class="card-back-center">
+              <div class="card-back-brand">OLABERRY</div>
+              <div class="card-back-tagline">Cleaning Services • Smart Contact Card</div>
+            </div>
+
+            <div class="card-back-footer">
+              <div class="card-back-info">
+                <span class="card-back-hint">✦ Tap phone to instantly connect</span>
+                <span class="card-back-serial">NFC-OB-9284-VERIFIED</span>
+              </div>
+              <!-- Real scannable mini QR on card back -->
+              <div class="card-back-qr" id="cardBackQr" title="Click to test live QR Code">
+                <div id="miniCardQr"></div>
+              </div>
+            </div>
+
+            <div class="card-shine" id="cardShineBack"></div>
+          </div>
+        </div>
+
+        <!-- Realistic Ground Shadow -->
+        <div class="card-shadow" id="cardShadow"></div>
+
+        <!-- Interactive Control Buttons -->
+        <div class="card-controls">
+          <button type="button" class="btn-interactive" id="spinBtn" aria-label="Spin business card for 2 seconds">
+            <span class="icon-glyph">↻</span>
+            <span>Spin Card (2s)</span>
+          </button>
+          <button type="button" class="btn-interactive" id="flipBtn" aria-label="Flip between front and back of the card">
+            <span>⇄</span>
+            <span id="flipBtnText">Flip Card</span>
+          </button>
+          <button type="button" class="btn-interactive btn-qr-highlight" id="qrModalBtn" aria-label="Test QR Code with phone camera">
+            <span>📱</span>
+            <span>Test QR Code</span>
+          </button>
+        </div>
+
+        <p class="interactive-hint">
+          <span>✧</span> Click card to spin • Click "Test QR Code" to scan with phone
+        </p>
+
+      </div>
+    </div>
+
+    <!-- Right Column: Business Contact Action Hub -->
+    <section class="actions" aria-label="Business contact options">
+      <h2>Welcome to OLABERRY</h2>
+      <p class="sub">Select an option below to connect with us instantly</p>
+      
+      <div class="action-list">
+        <!-- Live QR Code testing link -->
+        <a class="action action-qr-test" id="qrActionLink" href="#test-qr">
+          <span class="action-icon">📱</span>
+          <span class="action-text">
+            <strong>Scan Live QR Code</strong>
+            <small>Point your smartphone camera to test redirect</small>
+          </span>
+          <span class="action-arrow">›</span>
+        </a>
+
+        <a class="action" id="call" href="tel:+2340000000000">
+          <span class="action-icon">☎</span>
+          <span class="action-text">
+            <strong>Call our team</strong>
+            <small>Speak with us directly</small>
+          </span>
+          <span class="action-arrow">›</span>
+        </a>
+
+        <a class="action" id="whatsapp" href="https://wa.me/2340000000000" target="_blank" rel="noopener">
+          <span class="action-icon">💬</span>
+          <span class="action-text">
+            <strong>WhatsApp us</strong>
+            <small>Chat with our team</small>
+          </span>
+          <span class="action-arrow">›</span>
+        </a>
+
+        <a class="action" id="book" href="#" target="_blank" rel="noopener">
+          <span class="action-icon">📅</span>
+          <span class="action-text">
+            <strong>Book a cleaning service</strong>
+            <small>Choose a date and request a service</small>
+          </span>
+          <span class="action-arrow">›</span>
+        </a>
+
+        <a class="action" id="website" href="https://example.com" target="_blank" rel="noopener">
+          <span class="action-icon">↗</span>
+          <span class="action-text">
+            <strong>Visit our website</strong>
+            <small>Explore our services & portfolio</small>
+          </span>
+          <span class="action-arrow">›</span>
+        </a>
+
+        <a class="action" id="email" href="mailto:hello@yourdomain.com">
+          <span class="action-icon">✉</span>
+          <span class="action-text">
+            <strong>Send an email</strong>
+            <small>Make an enquiry</small>
+          </span>
+          <span class="action-arrow">›</span>
+        </a>
+
+        <a class="action" id="directions" href="https://www.google.com/maps/search/?api=1&query=Business+Address" target="_blank" rel="noopener">
+          <span class="action-icon">📍</span>
+          <span class="action-text">
+            <strong>Get directions</strong>
+            <small>Find our business location</small>
+          </span>
+          <span class="action-arrow">›</span>
+        </a>
+
+        <a class="action action-primary" id="save" href="olaberry-contact.vcf" download>
+          <span class="action-icon">📥</span>
+          <span class="action-text">
+            <strong>Save contact card</strong>
+            <small>Add OLABERRY directly to your phone</small>
+          </span>
+          <span class="action-arrow">↓</span>
+        </a>
+      </div>
+    </section>
+
+  </div>
+
+  <p class="note">Please customize the business contact details in the script section before publishing or printing the QR code.</p>
+</main>
+
+<!-- Live QR Code Scanner Test Modal -->
+<div class="qr-modal-backdrop" id="qrModalBackdrop" role="dialog" aria-modal="true" aria-labelledby="qrModalTitle">
+  <div class="qr-modal">
+    <button type="button" class="qr-modal-close" id="qrModalClose" aria-label="Close modal">✕</button>
+    <h3 id="qrModalTitle">Live QR Scanner Test</h3>
+    <p class="qr-desc">Scan this code with your smartphone camera to test opening this page when hosted.</p>
+    
+    <!-- Rendered QR Code -->
+    <div class="qr-frame">
+      <div id="modalQrCanvas"></div>
+    </div>
+
+    <!-- Encoded URL -->
+    <div class="qr-url-box">
+      <div class="qr-url-text" id="qrTargetUrlDisplay">...</div>
+      <button type="button" class="btn-copy-url" id="copyUrlBtn">Copy</button>
+    </div>
+
+    <!-- Download button for physical printing -->
+    <div class="qr-actions">
+      <button type="button" class="btn-download-qr" id="downloadQrBtn">
+        <span>📥</span>
+        <span>Download QR for Printing (PNG)</span>
+      </button>
+    </div>
+
+    <p class="scan-tips">
+      💡 Tip: Point your camera at the code above. When tapped, it redirects straight to your live business card!
+    </p>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div class="toast-msg" id="toastMsg">Link copied to clipboard!</div>
+
+<script>
+/* =====================================================================
+   OLABERRY BUSINESS CONTACT CONFIGURATION
+   Edit these details before publishing.
+   ===================================================================== */
+const BUSINESS = {
+  name: "OLABERRY Cleaning Services",
+  phone: "+2340000000000",
+  whatsapp: "2340000000000",
+  email: "hello@yourdomain.com",
+  website: "https://example.com",
+  booking: "https://example.com/booking",
+  address: "Business Address"
+};
+
+// Wire up dynamic links
+const setLink = (id, url) => {
+  const el = document.getElementById(id);
+  if (el) el.href = url;
+};
+
+setLink("call", "tel:" + BUSINESS.phone);
+setLink("whatsapp", "https://wa.me/" + BUSINESS.whatsapp);
+setLink("email", "mailto:" + BUSINESS.email);
+setLink("website", BUSINESS.website);
+setLink("book", BUSINESS.booking);
+setLink("directions", "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(BUSINESS.address));
+
+// Generate downloadable vCard
+const vcard = [
+  "BEGIN:VCARD",
+  "VERSION:3.0",
+  "FN:" + BUSINESS.name,
+  "ORG:" + BUSINESS.name,
+  "TEL:" + BUSINESS.phone,
+  "EMAIL:" + BUSINESS.email,
+  "URL:" + BUSINESS.website,
+  "ADR:;;" + BUSINESS.address + ";;;;",
+  "END:VCARD"
+].join("\r\n");
+
+const blob = new Blob([vcard], { type: "text/vcard" });
+const saveBtn = document.getElementById("save");
+if (saveBtn) {
+  saveBtn.href = URL.createObjectURL(blob);
+  saveBtn.download = "olaberry-contact.vcf";
+}
+
+/* =====================================================================
+   GSAP 3D SPIN ANIMATION (2 SECONDS) & RESPONSIVE INTERACTION
+   ===================================================================== */
+const cardStage = document.getElementById("cardStage");
+const card3d = document.getElementById("card3d");
+const cardShineFront = document.getElementById("cardShineFront");
+const cardShineBack = document.getElementById("cardShineBack");
+const cardShadow = document.getElementById("cardShadow");
+const spinBtn = document.getElementById("spinBtn");
+const flipBtn = document.getElementById("flipBtn");
+const flipBtnText = document.getElementById("flipBtnText");
+
+let isSpinning = false;
+let isFlipped = false;
+let currentRotationY = 0;
+
+/**
+ * Perform a 2.0-second 3D spin animation then stop smoothly.
+ */
+function spinCard(duration = 2.0) {
+  if (isSpinning) return;
+  isSpinning = true;
+
+  if (typeof gsap !== "undefined") {
+    gsap.killTweensOf(card3d);
+    gsap.killTweensOf(cardShineFront);
+    gsap.killTweensOf(cardShineBack);
+    gsap.killTweensOf(cardShadow);
+
+    const targetRotationY = currentRotationY + 720; // 2 full revolutions
+
+    const tl = gsap.timeline({
+      onComplete: () => {
+        isSpinning = false;
+        currentRotationY = targetRotationY;
+        const normalizedY = isFlipped ? 180 : 0;
+        gsap.set(card3d, { rotationY: normalizedY, rotationX: 0, rotationZ: 0, z: 0, scale: 1 });
+        currentRotationY = normalizedY;
+      }
+    });
+
+    // 1. 3D Card Spin: 2.0 seconds duration, easing to a silky stop
+    tl.fromTo(card3d, 
+      {
+        rotationY: currentRotationY,
+        rotationX: 16,
+        rotationZ: -8,
+        scale: 0.92,
+        z: -30
+      },
+      {
+        rotationY: targetRotationY,
+        rotationX: 0,
+        rotationZ: 0,
+        scale: 1,
+        z: 0,
+        duration: duration,
+        ease: "power3.out"
+      },
+      0
+    );
+
+    // 2. Glare sweep
+    tl.fromTo(cardShineFront,
+      { xPercent: -140, opacity: 0 },
+      { xPercent: 180, opacity: 0.95, duration: duration, ease: "power2.out" },
+      0
+    );
+
+    tl.fromTo(cardShineBack,
+      { xPercent: -140, opacity: 0 },
+      { xPercent: 180, opacity: 0.95, duration: duration, ease: "power2.out" },
+      0
+    );
+
+    // 3. Realistic dynamic shadow
+    tl.fromTo(cardShadow,
+      { scaleX: 0.72, scaleY: 0.7, opacity: 0.25 },
+      { scaleX: 1, scaleY: 1, opacity: 0.8, duration: duration, ease: "power3.out" },
+      0
+    );
+
+  } else {
+    // Offline CSS animation fallback
+    card3d.classList.remove("css-spin");
+    void card3d.offsetWidth;
+    card3d.classList.add("css-spin");
+    setTimeout(() => {
+      isSpinning = false;
+    }, duration * 1000);
+  }
+}
+
+/**
+ * Toggle between Front and Back face smoothly
+ */
+function toggleFlip() {
+  if (isSpinning) return;
+  isFlipped = !isFlipped;
+  const targetY = isFlipped ? 180 : 0;
+  currentRotationY = targetY;
+
+  if (flipBtnText) {
+    flipBtnText.textContent = isFlipped ? "Show Front" : "Flip Card";
+  }
+
+  if (typeof gsap !== "undefined") {
+    gsap.to(card3d, {
+      rotationY: targetY,
+      rotationX: 0,
+      rotationZ: 0,
+      duration: 0.7,
+      ease: "power2.inOut"
+    });
+  } else {
+    card3d.style.transform = `rotateY(${targetY}deg)`;
+  }
+}
+
+// 3D Cursor Tilt on Hover
+if (cardStage && card3d) {
+  cardStage.addEventListener("mousemove", (e) => {
+    if (isSpinning || typeof gsap === "undefined") return;
+
+    const rect = card3d.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const tiltX = ((y - centerY) / centerY) * -11;
+    const tiltY = isFlipped 
+      ? 180 + ((x - centerX) / centerX) * 11 
+      : ((x - centerX) / centerX) * 11;
+
+    gsap.to(card3d, {
+      rotationX: tiltX,
+      rotationY: tiltY,
+      scale: 1.02,
+      duration: 0.35,
+      ease: "power1.out"
+    });
+
+    const activeShine = isFlipped ? cardShineBack : cardShineFront;
+    if (activeShine) {
+      const shinePercent = ((x / rect.width) * 200) - 100;
+      gsap.to(activeShine, {
+        xPercent: shinePercent,
+        opacity: 0.35,
+        duration: 0.2
+      });
+    }
+  });
+
+  cardStage.addEventListener("mouseleave", () => {
+    if (isSpinning || typeof gsap === "undefined") return;
+
+    gsap.to(card3d, {
+      rotationX: 0,
+      rotationY: isFlipped ? 180 : 0,
+      scale: 1,
+      duration: 0.6,
+      ease: "power2.out"
+    });
+
+    const activeShine = isFlipped ? cardShineBack : cardShineFront;
+    if (activeShine) {
+      gsap.to(activeShine, { opacity: 0, duration: 0.4 });
+    }
+  });
+
+  // Click card to spin
+  card3d.addEventListener("click", () => {
+    spinCard(2.0);
+  });
+
+  // Keyboard accessibility
+  card3d.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      spinCard(2.0);
+    }
+  });
+}
+
+// Button controls
+if (spinBtn) {
+  spinBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    spinCard(2.0);
+  });
+}
+
+if (flipBtn) {
+  flipBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggleFlip();
+  });
+}
+
+// Mobile touch
+let lastTapTime = 0;
+if (card3d) {
+  card3d.addEventListener("touchend", (e) => {
+    const currentTime = new Date().getTime();
+    const tapLength = currentTime - lastTapTime;
+    if (tapLength < 350 && tapLength > 0) {
+      toggleFlip();
+      e.preventDefault();
+    } else {
+      spinCard(2.0);
+    }
+    lastTapTime = currentTime;
+  });
+}
+
+/* =====================================================================
+   LIVE QR CODE GENERATION & CAMERA SCAN TEST MODAL
+   ===================================================================== */
+const qrModalBackdrop = document.getElementById("qrModalBackdrop");
+const qrModalBtn = document.getElementById("qrModalBtn");
+const qrModalClose = document.getElementById("qrModalClose");
+const qrActionLink = document.getElementById("qrActionLink");
+const cardBackQr = document.getElementById("cardBackQr");
+const modalQrCanvas = document.getElementById("modalQrCanvas");
+const miniCardQr = document.getElementById("miniCardQr");
+const qrTargetUrlDisplay = document.getElementById("qrTargetUrlDisplay");
+const copyUrlBtn = document.getElementById("copyUrlBtn");
+const downloadQrBtn = document.getElementById("downloadQrBtn");
+const toastMsg = document.getElementById("toastMsg");
+
+// Determine the live target URL
+// When hosted on Netlify, window.location.href automatically points to the live URL!
+function getLiveUrl() {
+  const current = window.location.href;
+  if (current.startsWith("http://") || current.startsWith("https://")) {
+    return current.split("#")[0];
+  }
+  // Fallback placeholder before deployment
+  return "https://smart-business-card.netlify.app";
+}
+
+let modalQrCodeInstance = null;
+let miniQrCodeInstance = null;
+
+function renderQrCodes() {
+  const targetUrl = getLiveUrl();
+  if (qrTargetUrlDisplay) {
+    qrTargetUrlDisplay.textContent = targetUrl;
+  }
+
+  // 1. Render Large High-Resolution Modal QR
+  if (modalQrCanvas && typeof QRCode !== "undefined") {
+    modalQrCanvas.innerHTML = "";
+    modalQrCodeInstance = new QRCode(modalQrCanvas, {
+      text: targetUrl,
+      width: 200,
+      height: 200,
+      colorDark: "#10100e",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  }
+
+  // 2. Render Mini QR on physical Card Back
+  if (miniCardQr && typeof QRCode !== "undefined") {
+    miniCardQr.innerHTML = "";
+    miniQrCodeInstance = new QRCode(miniCardQr, {
+      text: targetUrl,
+      width: 44,
+      height: 44,
+      colorDark: "#10100e",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  }
+}
+
+function openQrModal() {
+  renderQrCodes();
+  if (qrModalBackdrop) {
+    qrModalBackdrop.classList.add("active");
+  }
+}
+
+function closeQrModal() {
+  if (qrModalBackdrop) {
+    qrModalBackdrop.classList.remove("active");
+  }
+}
+
+function showToast(text) {
+  if (!toastMsg) return;
+  toastMsg.textContent = text;
+  toastMsg.classList.add("show");
+  setTimeout(() => {
+    toastMsg.classList.remove("show");
+  }, 2500);
+}
+
+// Modal event listeners
+if (qrModalBtn) qrModalBtn.addEventListener("click", openQrModal);
+if (qrActionLink) qrActionLink.addEventListener("click", (e) => { e.preventDefault(); openQrModal(); });
+if (cardBackQr) cardBackQr.addEventListener("click", (e) => { e.stopPropagation(); openQrModal(); });
+if (qrModalClose) qrModalClose.addEventListener("click", closeQrModal);
+
+if (qrModalBackdrop) {
+  qrModalBackdrop.addEventListener("click", (e) => {
+    if (e.target === qrModalBackdrop) closeQrModal();
+  });
+}
+
+// Copy URL button
+if (copyUrlBtn) {
+  copyUrlBtn.addEventListener("click", () => {
+    const url = getLiveUrl();
+    navigator.clipboard.writeText(url).then(() => {
+      showToast("✓ Live URL copied to clipboard!");
+    }).catch(() => {
+      showToast("Link: " + url);
+    });
+  });
+}
+
+// Download QR Code as PNG image for physical NFC card printing
+if (downloadQrBtn) {
+  downloadQrBtn.addEventListener("click", () => {
+    const canvas = modalQrCanvas ? modalQrCanvas.querySelector("canvas") : null;
+    const img = modalQrCanvas ? modalQrCanvas.querySelector("img") : null;
+    let dataUrl = null;
+
+    if (canvas) {
+      dataUrl = canvas.toDataURL("image/png");
+    } else if (img && img.src) {
+      dataUrl = img.src;
+    }
+
+    if (dataUrl) {
+      const a = document.createElement("a");
+      a.href = dataUrl;
+      a.download = "olaberry-smart-card-qr.png";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast("✓ QR Code downloaded successfully!");
+    } else {
+      showToast("QR Code ready. Right click to save image.");
+    }
+  });
+}
+
+// Initial setup on load
+window.addEventListener("DOMContentLoaded", () => {
+  renderQrCodes();
+  setTimeout(() => {
+    spinCard(2.0);
+  }, 150);
+});
+</script>
+
+</body>
+</html>
